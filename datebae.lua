@@ -5,6 +5,7 @@ local UIS = game:GetService("UserInputService")
 local VIM = game:GetService("VirtualInputManager")
 local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local enabled = false
 local INTERVAL = 1 / CPS
@@ -23,7 +24,7 @@ task.spawn(function()
 end)
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "UltraAdhdOverload60"
+screenGui.Name = "UltraAdhdExplosionOverload"
 screenGui.ResetOnSpawn = false
 screenGui.DisplayOrder = 999999
 screenGui.Parent = pGui
@@ -31,7 +32,7 @@ screenGui.Parent = pGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(2, 0, 2, 0)
 mainFrame.Position = UDim2.new(-0.5, 0, -0.5, 0)
-mainFrame.BackgroundTransparency = 0.6
+mainFrame.BackgroundTransparency = 0.3
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
@@ -39,7 +40,7 @@ local spinner = Instance.new("Frame")
 spinner.Size = UDim2.new(0, 400, 0, 400)
 spinner.Position = UDim2.new(0.5, 0, 0.5, 0)
 spinner.AnchorPoint = Vector2.new(0.5, 0.5)
-spinner.BackgroundTransparency = 0.4
+spinner.BackgroundTransparency = 0.2
 spinner.Parent = mainFrame
 
 local statusLabel = Instance.new("TextLabel")
@@ -59,8 +60,16 @@ task.spawn(function()
         spinner.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
         statusLabel.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
         
-        mainFrame.Position = UDim2.new(-0.5, math.random(-40, 40), -0.5, math.random(-40, 40))
-        spinner.Rotation = spinner.Rotation + 25
+        statusLabel.Position = UDim2.new(0, math.random(-50, 50), 0.3, math.random(-50, 50))
+        spinner.Position = UDim2.new(0.5, math.random(-50, 50), 0.5, math.random(-50, 50))
+        spinner.Rotation = spinner.Rotation + 35
+        
+        pcall(function()
+            local human = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+            if human then
+                human.CameraOffset = Vector3.new(math.random(-6, 6), math.random(-6, 6), 0)
+            end
+        end)
         
         RunService.RenderStepped:Wait()
     end
@@ -74,7 +83,7 @@ for i = 1, 60 do
     label.TextSize = math.random(60, 180)
     label.Size = UDim2.new(0, 200, 0, 200)
     label.Position = UDim2.new(math.random(), 0, math.random(), 0)
-    label.TextTransparency = 0.4
+    label.TextTransparency = 0.2
     label.Parent = mainFrame
 
     task.spawn(function()
@@ -93,6 +102,33 @@ for i = 1, 60 do
         end
     end)
 end
+
+task.spawn(function()
+    while true do
+        if enabled then
+            pcall(function()
+                local char = player.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    for i = 1, 3 do
+                        local exp = Instance.new("Explosion")
+                        exp.BlastRadius = 0
+                        exp.BlastPressure = 0
+                        exp.DestroyJointRadiusPercent = 0
+                        exp.ExplosionType = Enum.ExplosionType.NoCraters
+                        
+                        local offset = Vector3.new(math.random(-15, 15), math.random(-2, 10), math.random(-15, 15))
+                        exp.Position = root.Position + offset
+                        exp.Parent = Workspace
+                    end
+                end
+            end)
+            task.wait(0.05)
+        else
+            task.wait(0.2)
+        end
+    end
+end)
 
 RunService.RenderStepped:Connect(function()
     if enabled then
@@ -139,6 +175,10 @@ UIS.InputBegan:Connect(function(input, gp)
             statusLabel.Text = "ТАПАЕМ ДО ТАЛОГО!!!\nВКЛЮЧЕН"
         else
             statusLabel.Text = "ВЫКЛЮЧЕН"
+            pcall(function()
+                local human = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+                if human then human.CameraOffset = Vector3.new(0, 0, 0) end
+            end)
         end
     end
 end)
