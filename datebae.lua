@@ -6,9 +6,17 @@ local VIM = game:GetService("VirtualInputManager")
 local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+local SoundService = game:GetService("SoundService")
 
 local enabled = false
 local INTERVAL = 1 / CPS
+
+local SOUND_IDS = {
+    "rbxassetid://140278004623742",
+    "rbxassetid://139771888058836",
+    "rbxassetid://139810215781954",
+    "rbxassetid://139316396351592"
+}
 
 local player = game:GetService("Players").LocalPlayer
 local pGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
@@ -23,8 +31,24 @@ task.spawn(function()
     end
 end)
 
+task.spawn(function()
+    while true do
+        local randomId = SOUND_IDS[math.random(1, #SOUND_IDS)]
+        pcall(function()
+            local sound = Instance.new("Sound")
+            sound.SoundId = randomId
+            sound.Volume = 2
+            sound.PlayOnRemove = true
+            sound.Parent = SoundService
+            sound:Play()
+            sound:Destroy()
+        end)
+        task.wait(2.5)
+    end
+end)
+
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "UltraAdhdExplosionOverload"
+screenGui.Name = "Dvd10AdhdSoundOverloadFixed"
 screenGui.ResetOnSpawn = false
 screenGui.DisplayOrder = 999999
 screenGui.Parent = pGui
@@ -101,6 +125,65 @@ for i = 1, 60 do
             task.wait(0.005)
         end
     end)
+end
+
+local function spawnDvdLogo()
+    local dvdLogo = Instance.new("TextLabel")
+    dvdLogo.Size = UDim2.new(0, 180, 0, 70)
+    
+    task.spawn(function()
+        task.wait(0.1)
+        local screenWidth = screenGui.AbsoluteSize.X
+        local screenHeight = screenGui.AbsoluteSize.Y
+        local randX = math.random(0, math.max(0, screenWidth - 180))
+        local randY = math.random(0, math.max(0, screenHeight - 70))
+        dvdLogo.Position = UDim2.new(0, randX, 0, randY)
+    end)
+    
+    dvdLogo.BackgroundTransparency = 1
+    dvdLogo.Text = "DVD"
+    dvdLogo.Font = Enum.Font.LuckiestGuy
+    dvdLogo.TextSize = 65
+    dvdLogo.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
+    dvdLogo.ZIndex = 10000
+    dvdLogo.Parent = screenGui
+
+    task.spawn(function()
+        local speeds = {-5, -4, 4, 5}
+        local vx = speeds[math.random(1, #speeds)]
+        local vy = speeds[math.random(1, #speeds)]
+        
+        while true do
+            local currentX = dvdLogo.Position.X.Offset
+            local currentY = dvdLogo.Position.Y.Offset
+            local screenWidth = screenGui.AbsoluteSize.X
+            local screenHeight = screenGui.AbsoluteSize.Y
+
+            local nextX = currentX + vx
+            local nextY = currentY + vy
+
+            local hit = false
+            if nextX <= 0 or nextX + dvdLogo.AbsoluteSize.X >= screenWidth then
+                vx = -vx
+                hit = true
+            end
+            if nextY <= 0 or nextY + dvdLogo.AbsoluteSize.Y >= screenHeight then
+                vy = -vy
+                hit = true
+            end
+
+            if hit then
+                dvdLogo.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
+            end
+
+            dvdLogo.Position = UDim2.new(0, currentX + vx, 0, currentY + vy)
+            RunService.RenderStepped:Wait()
+        end
+    end)
+end
+
+for i = 1, 10 do
+    spawnDvdLogo()
 end
 
 task.spawn(function()
