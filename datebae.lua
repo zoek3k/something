@@ -23,16 +23,24 @@ task.spawn(function()
 end)
 
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "MaxAdhdOverload"
+screenGui.Name = "UltraAdhdOverload60"
 screenGui.ResetOnSpawn = false
 screenGui.DisplayOrder = 999999
 screenGui.Parent = pGui
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(1.1, 100, 1.1, 100)
-mainFrame.Position = UDim2.new(-0.05, -50, -0.05, -50)
+mainFrame.Size = UDim2.new(2, 0, 2, 0)
+mainFrame.Position = UDim2.new(-0.5, 0, -0.5, 0)
+mainFrame.BackgroundTransparency = 0.6
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
+
+local spinner = Instance.new("Frame")
+spinner.Size = UDim2.new(0, 400, 0, 400)
+spinner.Position = UDim2.new(0.5, 0, 0.5, 0)
+spinner.AnchorPoint = Vector2.new(0.5, 0.5)
+spinner.BackgroundTransparency = 0.4
+spinner.Parent = mainFrame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, 0, 0.4, 0)
@@ -48,8 +56,12 @@ statusLabel.Parent = mainFrame
 task.spawn(function()
     while true do
         mainFrame.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
+        spinner.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
         statusLabel.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
-        mainFrame.Position = UDim2.new(-0.05, math.random(-20, 20), -0.05, math.random(-20, 20))
+        
+        mainFrame.Position = UDim2.new(-0.5, math.random(-40, 40), -0.5, math.random(-40, 40))
+        spinner.Rotation = spinner.Rotation + 25
+        
         RunService.RenderStepped:Wait()
     end
 end)
@@ -62,6 +74,7 @@ for i = 1, 60 do
     label.TextSize = math.random(60, 180)
     label.Size = UDim2.new(0, 200, 0, 200)
     label.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    label.TextTransparency = 0.4
     label.Parent = mainFrame
 
     task.spawn(function()
@@ -80,6 +93,28 @@ for i = 1, 60 do
         end
     end)
 end
+
+RunService.RenderStepped:Connect(function()
+    if enabled then
+        local mousePos = UIS:GetMouseLocation()
+        local trail = Instance.new("TextLabel")
+        trail.BackgroundTransparency = 1
+        trail.Text = "🔥"
+        trail.TextSize = math.random(30, 70)
+        trail.Position = UDim2.new(0, mousePos.X, 0, mousePos.Y - 36)
+        trail.AnchorPoint = Vector2.new(0.5, 0.5)
+        trail.Parent = screenGui
+        
+        task.spawn(function()
+            for i = 0, 1, 0.1 do
+                trail.TextTransparency = i
+                trail.Rotation = trail.Rotation + 15
+                task.wait(0.02)
+            end
+            trail:Destroy()
+        end)
+    end
+end)
 
 task.spawn(function()
     while true do
