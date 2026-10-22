@@ -37,7 +37,7 @@ task.spawn(function()
         pcall(function()
             local sound = Instance.new("Sound")
             sound.SoundId = randomId
-            sound.Volume = 2
+            sound.Volume = 3
             sound.PlayOnRemove = true
             sound.Parent = SoundService
             sound:Play()
